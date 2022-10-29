@@ -1,2 +1,2 @@
-# docker-testing
-An environment for testing out docker
+# homelab
+homelab config definitions
