@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hass
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:
+    hass
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: hass
+  template:
+    metadata:
+      labels:
+        name: hass
+    spec:
+      containers:
+      - name: hass
+        image: homeassistant/home-assistant:2022.10
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 800m
+            memory: 2Gi
