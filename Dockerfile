@@ -22,4 +22,6 @@ RUN xorrisofs \
   -joliet \
   # Write the resulting image to a file
   -output out.iso \
+  # Enable Rock Ridge and set to read-only for everybody
+  -rational-rock \
   alpine
