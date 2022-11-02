@@ -26,7 +26,7 @@ RUN apk update && apk add xorriso
 #   -rational-rock \
 #   alpine
 
-# Copy ./alpine into the root directory of the alpine standard ISO image
+# Copy ./alpine into the root directory of the alpine standard ISO image. Output to stdout.
 ENTRYPOINT [ "xorrisofs", \
   # Add Joliet attributes for Microsoft systems
   "-joliet", \
