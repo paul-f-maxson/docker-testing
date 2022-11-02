@@ -9,7 +9,8 @@ ADD https://github.com/macmpi/alpine-linux-headless-bootstrap/blob/9141ed77ee4a6
 RUN apk update \
   && apk add p7zip
 
-RUN 7z x -oalpine alpine.iso 
+# Extract the iso image as files
+RUN 7z x -y -oalpine alpine.iso 
 
 RUN apk update && apk add xorriso
 
