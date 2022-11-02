@@ -25,3 +25,5 @@ RUN xorrisofs \
   # Enable Rock Ridge and set to read-only for everybody
   -rational-rock \
   alpine
+
+CMD [ "cat", "out.iso" ]
