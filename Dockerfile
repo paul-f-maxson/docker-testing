@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.4
+
 FROM alpine:latest
 
 # Download the standard alpine iso file. Use pinned version.
@@ -14,16 +16,20 @@ RUN 7z x -y -oalpine alpine.iso
 
 RUN apk update && apk add xorriso
 
-# Copy ./alpine into the root directory of the alpine standard ISO image
-RUN xorrisofs \
-  # Enable Rock Ridge and set to read-only for everybody
-  -rational-rock \
-  # Add Joliet attributes for Microsoft systems
-  -joliet \
-  # Write the resulting image to a file
-  -output out.iso \
-  # Enable Rock Ridge and set to read-only for everybody
-  -rational-rock \
-  alpine
+# # Copy ./alpine into the root directory of the alpine standard ISO image
+# RUN xorrisofs \
+#   # Add Joliet attributes for Microsoft systems
+#   -joliet \
+#   # Write the resulting image to a file
+#   -output out.iso \
+#   # Enable Rock Ridge and set to read-only for everybody
+#   -rational-rock \
+#   alpine
 
-CMD [ "cat", "out.iso" ]
+# Copy ./alpine into the root directory of the alpine standard ISO image
+ENTRYPOINT [ "xorrisofs", \
+  # Add Joliet attributes for Microsoft systems
+  "-joliet", \
+  # Enable Rock Ridge and set to read-only for everybody
+  "-rational-rock", \
+  "alpine" ]
