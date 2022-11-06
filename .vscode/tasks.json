@@ -7,7 +7,7 @@
       "label": "build",
       "type": "shell",
       "detail": "build the iso image for the homelab machine(s)",
-      "command": "mkdir -p build && docker run --rm -it $(docker build -q .) > build/homelab.iso"
+      "command": "docker build --iidfile build.imageid . && mkdir -p build && docker run --rm $(cat build.imageid && rm build.imageid) > build/homelab.iso"
     }
   ]
 }
