@@ -15,22 +15,22 @@ spec:
   selector:
     name: zwave
 ---
-# apiVersion: networking.k8s.io/v1
-# kind: Ingress
-# metadata:
-#   name: zwave
-# spec:
-#   rules:
-#     - host: localhost
-#       http:
-#         paths:
-#         - path: /
-#           pathType: Prefix
-#           backend:
-#             service:
-#               name: zwave
-#               port: 
-#                 name: http
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: zwave
+spec:
+  rules:
+    - host: localhost
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: zwave
+              port: 
+                name: http
 ---
 apiVersion: apps/v1
 kind: Deployment
