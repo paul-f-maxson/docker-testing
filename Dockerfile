@@ -3,9 +3,12 @@ ARG ARCH_TAG=base-20221120.0.103865
 
 FROM archlinux:${ARCH_TAG} AS base
 
+ARG PROFILEDIR
+
+COPY --link ${PROFILEDIR} /profile
+
 FROM base as install-k8s
 
-ARG SRCDIR=src
 ARG CNI_PLUGINS_VERSION=1.1.1
 ARG CRICTL_VERSION=1.25.0
 ARG KUBEADM_VERSION=1.25.3
@@ -17,27 +20,27 @@ ARG K8S_DEST=/usr/local/bin
 # INSTALL K8S ON THE IMAGE
 # based on https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#k8s-install-2
 
-WORKDIR /arch
+WORKDIR /profile/airootfs
 
 # Install CNI plugins (required for most pod network):
 
-ADD https://github.com/containernetworking/plugins/releases/download/v${CNI_PLUGINS_VERSION}/cni-plugins-linux-${K8S_ARCH}-v${CNI_PLUGINS_VERSION}.tgz /tmp/cni.tgz
+RUN mkdir -p .${CNI_DEST}
 
-RUN tar --extract --gzip --file=/tmp/cni.tgz --directory=.${CNI_DEST}
+RUN curl -sSL https://github.com/containernetworking/plugins/releases/download/v${CNI_PLUGINS_VERSION}/cni-plugins-linux-${K8S_ARCH}-v${CNI_PLUGINS_VERSION}.tgz | tar --extract --gzip --directory=.${CNI_DEST}
 
 
 # Install crictl (required for kubeadm / Kubelet Container Runtime Interface (CRI))
 
-ADD https://github.com/kubernetes-sigs/cri-tools/releases/download/v${CRICTL_VERSION}/crictl-v${CRICTL_VERSION}-linux-${K8S_ARCH}.tar.gz /tmp/crictl.tgz
+RUN mkdir -p .${K8S_DEST}
 
-RUN tar --extract --gzip --file=/tmp/crictl.tgz --directory=${K8S_DEST}
+RUN curl -sSL https://github.com/kubernetes-sigs/cri-tools/releases/download/v${CRICTL_VERSION}/crictl-v${CRICTL_VERSION}-linux-${K8S_ARCH}.tar.gz | tar --extract --gzip  --directory=.${K8S_DEST}
 
 
 # Install kubeadm, kubelet and kubectl
 
-ADD https://dl.k8s.io/release/v${KUBEADM_VERSION}/bin/linux/${K8S_ARCH}/kubeadm ./kubeadm
+RUN curl -sSL https://dl.k8s.io/release/v${KUBEADM_VERSION}/bin/linux/${K8S_ARCH}/kubeadm > ./kubeadm
 
-ADD https://dl.k8s.io/release/v${KUBEADM_VERSION}/bin/linux/${K8S_ARCH}/kubelet ./kubelet
+RUN curl -sSL https://dl.k8s.io/release/v${KUBEADM_VERSION}/bin/linux/${K8S_ARCH}/kubelet > ./kubelet
 
 RUN chmod +x kubeadm && chmod +x kubelet
 
@@ -52,8 +55,9 @@ RUN curl -sSL "https://raw.githubusercontent.com/kubernetes/release/v${KUBELET_S
 
 WORKDIR /
 
-FROM base as build-iso
 
-RUN pacman -Syu --assume-yes archiso
+FROM install-k8s as build-iso
 
-ENTRYPOINT [ "archiso"]
+RUN pacman --sync --refresh --sysupgrade --noconfirm archiso
+
+ENTRYPOINT [ "mkarchiso", "-v", "-o", "/out", "-w", "/tmp/archiso-tmp", "/profile"]
