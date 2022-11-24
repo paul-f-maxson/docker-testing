@@ -7,7 +7,7 @@
       "label": "build",
       "type": "shell",
       "detail": "build the iso image for the homelab machine(s)",
-      "command": "docker build --iidfile build.imageid . && mkdir -p build && docker run --rm $(cat build.imageid && rm build.imageid) > build/homelab.iso"
+      "command": "docker run --mount 'type=bind,source=${workspaceFolder}/build,destination=/out' --privileged --rm $(docker build -q --build-arg PROFILEDIR=arch-profiles/matchbook .)"
     }
   ]
 }
